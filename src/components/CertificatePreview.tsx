@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import '../index.css';
+import "../index.css";
+import jsPDF from "jspdf";
 
 const CertificatePage: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -13,80 +14,109 @@ const CertificatePage: React.FC = () => {
     if (!ctx) return;
 
     const image = new Image();
-    image.src = "/CertificateAIBAITCLUB.png"; // Public folder
+    image.src = "/certificate.jpg";
 
     image.onload = async () => {
-      // Load fonts first
       await (document as any).fonts.ready;
 
-      // Resize canvas to image
       canvas.width = image.width;
       canvas.height = image.height;
 
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-      // Font setup
+      // Font settings
       const fontSize = Math.floor(canvas.width / 20);
       ctx.font = `${fontSize}px 'Pinyon Script', cursive`;
       ctx.fillStyle = "#1e3a8a";
       ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
 
+      // Position
       const x = canvas.width / 2;
       const y = canvas.height * 0.52;
+
+      // ✅ Add white rectangle behind name
+      const textWidth = ctx.measureText(name).width;
+      const padding = 20;
+      ctx.fillStyle = "#FFFFFF"; // White background
+      ctx.fillRect(
+        x - textWidth / 2 - padding / 2,
+        y - fontSize / 1.5,
+        textWidth + padding,
+        fontSize + 10
+      );
+
+      // 🖊️ Now write the name over white box
+      ctx.fillStyle = "#1e3a8a";
       ctx.fillText(name, x, y);
     };
   };
-
+  
+  
   useEffect(() => {
     generateCertificate();
   }, []);
+
+  //   const downloadCertificate = () => {
+  //     const canvas = canvasRef.current;
+  //     if (!canvas) return;
+
+  //     const link = document.createElement("a");
+  //     link.download = "certificate.png";
+  //     link.href = canvas.toDataURL("image/png");
+  //     link.click();
+  //   };
 
   const downloadCertificate = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const link = document.createElement("a");
-    link.download = "certificate.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    const imageData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "pt",
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imageData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save("certificate.pdf");
   };
+  return (
+    <>
+      <div className="bg-[#E9F0FF]">
+        <div className=" lg:w-12/12 lg:mx-auto ">
+          <div className="min-h-screen  flex items-center justify-center px-4 py-10">
+            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-5xl text-center space-y-6">
+              <div className="w-full relative rounded-lg overflow-hidden shadow-sm">
+                <canvas
+                  ref={canvasRef}
+                  className="w-full max-w-full  rounded"
+                />
+              </div>
 
-    return (
-        <>
-            <div className="bg-[#E9F0FF]">
-            <div className=" lg:w-12/12 lg:mx-auto ">
-        <div className="min-h-screen  flex items-center justify-center px-4 py-10">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-5xl text-center space-y-6">
-            <div className="w-full relative rounded-lg overflow-hidden shadow-sm">
-              <canvas
-                ref={canvasRef}
-                className="w-full h-full object-contain"
-              />
-            </div>
+              <button
+                onClick={downloadCertificate}
+                className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-full transition duration-300 shadow-md"
+              >
+                Download Certificate
+              </button>
 
-            <button
-              onClick={downloadCertificate}
-              className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-full transition duration-300 shadow-md"
-            >
-              Download Certificate
-            </button>
-
-            <div>
-              <p className="text-center text-xs text-gray-400 mt-6">
-                Build By:{" "}
-                <a target="_blank" href="http://fb.me/mushfikur.a.k">
-                  Mushfikur Rahman
-                </a>
-              </p>
+              <div>
+                <p className="text-center text-xs text-gray-400 mt-6">
+                  Build By:{" "}
+                  <a target="_blank" href="http://fb.me/mushfikur.a.k">
+                    Mushfikur Rahman
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-                    </div>
-                </div>
-            </div>
-
-      </>
-    );
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default CertificatePage;
-
