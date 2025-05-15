@@ -1,0 +1,12 @@
+/* style.css */
+#certificate {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  
+  #certificate canvas {
+    max-width: 100%;
+    border: 2px solid #ccc;
+  }
+  
