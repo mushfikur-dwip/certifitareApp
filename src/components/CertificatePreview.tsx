@@ -72,17 +72,25 @@ const CertificatePage: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const imageData = canvas.toDataURL("image/png");
+    // Convert to JPEG (smaller size than PNG)
+    const imageData = canvas.toDataURL("image/jpeg", 0.7); // 70% quality
+
+    // Optional: Scale down the PDF
+    const scale = 0.5;
+    const pdfWidth = canvas.width * scale;
+    const pdfHeight = canvas.height * scale;
 
     const pdf = new jsPDF({
       orientation: "landscape",
       unit: "pt",
-      format: [canvas.width, canvas.height],
+      format: [pdfWidth, pdfHeight],
     });
 
-    pdf.addImage(imageData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.addImage(imageData, "JPEG", 0, 0, pdfWidth, pdfHeight);
     pdf.save("certificate.pdf");
   };
+  
+  
   return (
     <>
       <div className="bg-[#E9F0FF]">
