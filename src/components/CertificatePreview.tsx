@@ -34,7 +34,7 @@ const CertificatePage: React.FC = () => {
 
       // Position
       const x = canvas.width / 2;
-      const y = canvas.height * 0.52;
+      const y = canvas.height * 0.54;
 
       // ✅ Add white rectangle behind name
       const textWidth = ctx.measureText(name).width;
@@ -52,8 +52,7 @@ const CertificatePage: React.FC = () => {
       ctx.fillText(name, x, y);
     };
   };
-  
-  
+
   useEffect(() => {
     generateCertificate();
   }, []);
@@ -89,8 +88,7 @@ const CertificatePage: React.FC = () => {
     pdf.addImage(imageData, "JPEG", 0, 0, pdfWidth, pdfHeight);
     pdf.save("certificate.pdf");
   };
-  
-  
+
   return (
     <>
       <div className="bg-[#E9F0FF]">
@@ -106,7 +104,7 @@ const CertificatePage: React.FC = () => {
 
               <button
                 onClick={downloadCertificate}
-                className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-full transition duration-300 shadow-md"
+                className="bg-green-600 hover:bg-green-700 text-white font-medium my-0 px-6 py-3 rounded-full transition duration-300 shadow-md"
               >
                 Download Certificate
               </button>

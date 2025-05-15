@@ -24,7 +24,7 @@ const LeadForm: React.FC = () => {
 
   return (
     <div className="flex items-center justify-center px-4 ">
-      <form onSubmit={handleSubmit} className="w-full bg-white  p-6 space-y-6">
+      <form onSubmit={handleSubmit} className="w-full bg-white  p-6 pb-0 space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-[#4338CA] mb-2">
             সার্টিফিকেট জেনারেটর
@@ -61,7 +61,7 @@ const LeadForm: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition shadow-md"
+          className="w-full  bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition shadow-md"
         >
           Generate Certificate
         </button>
