@@ -12,7 +12,8 @@ const Home: React.FC = () => {
               Build By:{" "}
               <a target="_blank" href="http://fb.me/mushfikur.a.k">
                 Mushfikur Rahman
-              </a>
+              </a> <br />
+              <span> Version: 1.00</span>
             </p>
           </div>
         </div>
