@@ -6,7 +6,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-const email = "mushfikur.learningbangladesh@gmail.com"; // এখানে যাকে admin বানাতে চাও, তার ইমেইল দাও
+const email = "care@learningbangladesh.com"; // এখানে যাকে admin বানাতে চাও, তার ইমেইল দাও
 
 admin
   .auth()
