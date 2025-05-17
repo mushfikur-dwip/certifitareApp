@@ -7,7 +7,7 @@ const App: React.FC = () => {
   return (
     <>
         <div className="bg-[#E9F0FF]">
-      <div className=" lg:w-3/12 lg:mx-auto ">
+      <div className=" lg:w-8/12 lg:mx-auto ">
           <ToastContainer position="top-center" autoClose={2000} />
           <AppRoutes />
         </div>

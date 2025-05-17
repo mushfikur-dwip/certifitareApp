@@ -1,13 +1,15 @@
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { db } from "../firebase";
 
 const LeadForm: React.FC = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name || !phone) {
@@ -15,16 +17,51 @@ const LeadForm: React.FC = () => {
       return;
     }
 
-    localStorage.setItem("leadName", name);
-    localStorage.setItem("leadPhone", phone);
+    if (phone.length < 11) {
+      toast.error("Phone number must be 11 digits");
+      return;
+    }
 
-    toast.success("Lead Submitted Successfully!");
-    setTimeout(() => navigate("/certificate"), 1000);
+    if (!/^\d+$/.test(phone)) {
+      toast.error("Phone number must be numeric");
+      return;
+    }
+    if (!/^[a-zA-Z\s]+$/.test(name)) {
+      toast.error("Name must be alphabetic");
+      return;
+    }
+    if (name.length < 3) {
+      toast.error("Name must be at least 3 characters");
+      return;
+    }
+    if (name.length > 50) {
+      toast.error("Name must be less than 50 characters");
+      return;
+    }
+    try {
+      await addDoc(collection(db, "leads"), {
+        name: name,
+        phone: phone,
+        createdAt: Timestamp.now(),
+      });
+
+      localStorage.setItem("leadName", name);
+      localStorage.setItem("leadPhone", phone);
+
+      toast.success("Lead Submitted Successfully!");
+      setTimeout(() => navigate("/certificate"), 1000);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      toast.error("Error submitting lead");
+    }
   };
 
   return (
     <div className="flex items-center justify-center px-4 ">
-      <form onSubmit={handleSubmit} className="w-full bg-white  p-6 pb-0 space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full bg-white  p-6 pb-0 space-y-6"
+      >
         <div className="text-center">
           <h2 className="text-3xl font-bold text-[#4338CA] mb-2">
             সার্টিফিকেট জেনারেটর
