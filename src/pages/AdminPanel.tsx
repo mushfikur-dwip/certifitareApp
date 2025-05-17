@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import {
   collection,
   onSnapshot,
@@ -9,6 +9,9 @@ import {
 
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
 
 
 interface Lead {
@@ -20,8 +23,30 @@ interface Lead {
 
 const AdminPanel: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const tokenResult = await user.getIdTokenResult(true);
+        if (tokenResult.claims.admin) {
+          setIsAdmin(true);
+        } else {
+          navigate("/login");
+        }
+      } else {
+        navigate("/login");
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [useNavigate]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
     const unsub = onSnapshot(collection(db, "leads"), (snapshot) => {
       const leadsData = snapshot.docs.map(
         (doc: QueryDocumentSnapshot<DocumentData>) => ({
@@ -29,13 +54,11 @@ const AdminPanel: React.FC = () => {
           ...doc.data(),
         })
       ) as Lead[];
-
       leadsData.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
       setLeads(leadsData);
     });
-
     return () => unsub();
-  }, []);
+  }, [isAdmin]);
 
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(
@@ -47,29 +70,39 @@ const AdminPanel: React.FC = () => {
           : "N/A",
       }))
     );
-
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Leads");
-
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
     });
-
     const file = new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-
     saveAs(file, "leads.xlsx");
   };
 
-  return (
-    <div className="min-h-screen bg-[#E9F0FF] py-10 px-4">
-      <div className="w-full mx-auto bg-white shadow rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-indigo-700 mb-6 text-center">
-          📋 Lead List
-        </h2>
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
 
+  if (loading)
+    return <div className="text-center py-10">Checking access...</div>;
+  if (!isAdmin) return null;
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="max-w-4xl mx-auto bg-white shadow rounded-lg p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-indigo-700">📋 Lead List</h2>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+          >
+            🚪 Logout
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full border text-sm">
             <thead className="bg-indigo-100 text-indigo-800">
@@ -100,7 +133,7 @@ const AdminPanel: React.FC = () => {
               )}
             </tbody>
           </table>
-          <div className="flex justify-end mb-4 mt-4">
+          <div className="flex justify-end mt-4">
             <button
               onClick={exportToExcel}
               className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
@@ -113,6 +146,5 @@ const AdminPanel: React.FC = () => {
     </div>
   );
 };
-  
-  
+
 export default AdminPanel;
