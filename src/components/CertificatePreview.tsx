@@ -14,7 +14,7 @@ const CertificatePage: React.FC = () => {
     if (!ctx) return;
 
     const image = new Image();
-    image.src = "/aisession.jpg";
+    image.src = "/updatedCertificate.jpg";
 
     image.onload = async () => {
       await (document as any).fonts.ready;
@@ -101,7 +101,7 @@ const CertificatePage: React.FC = () => {
                   className="w-full max-w-full  rounded"
                 />
               </div>
-
+                 <p >সার্টিফিকেট ফন্ট জানারেট না হলে<a href="#" onClick={() => window.location.href = window.location.href} className="text-blue-500" > এখানে </a> ক্লিক করুন</p>               
               <button
                 onClick={downloadCertificate}
                 className="bg-green-600 hover:bg-green-700 text-white font-medium my-0 px-6 py-3 rounded-full transition duration-300 shadow-md"

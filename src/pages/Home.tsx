@@ -13,7 +13,7 @@ const Home: React.FC = () => {
               <a target="_blank" href="http://fb.me/mushfikur.a.k">
                 Mushfikur Rahman
               </a> <br />
-              <span> Version: 1.00</span>
+              <span> Version: 1.1</span>
             </p>
           </div>
         </div>
