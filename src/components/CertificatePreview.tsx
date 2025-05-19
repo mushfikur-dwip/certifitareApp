@@ -14,7 +14,7 @@ const CertificatePage: React.FC = () => {
     if (!ctx) return;
 
     const image = new Image();
-    image.src = "/certificate.jpg";
+    image.src = "/aisession.jpg";
 
     image.onload = async () => {
       await (document as any).fonts.ready;
